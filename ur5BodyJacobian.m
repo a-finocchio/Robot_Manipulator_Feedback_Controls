@@ -1,0 +1,114 @@
+function Jsbt = ur5BodyJacobian(q)
+offset = [pi/2; pi/2; 0; pi/2; 0; 0];
+q = q + offset;
+theita1 = q(1);
+theita2 = q(2);
+theita3 = q(3);
+theita4 = q(4);
+theita5 = q(5);
+theita6 = q(6);
+I = eye(3);
+q0 = [0.19145; 0; 0.9119];
+R = [0 0 1; -1 0 0; 0 -1 0];
+gst0 = [R q0; 0 0 0 1];
+t1 = [0; 0; 0; 0; 0; 1];
+t2 = [0; 0; 0; 1; 0; 0];
+t3 = [0; 0.425; 0; 1; 0; 0];
+t4 = [0; 0.81725; 0; 1; 0; 0];
+t5 = [0; -0.10915; 0; 0; 0; 1];
+t6 = [0; 0.9119; 0; 1; 0; 0];
+%computing twists hat
+t1v = t1(1 : 3);
+t1w = t1(4 : 6);
+t1wh = [0 -t1w(3) t1w(2);
+        t1w(3) 0 -t1w(1);
+        -t1w(2) t1w(1) 0];
+t2v = t2(1 : 3);
+t2w = t2(4 : 6);
+t2wh = [0 -t2w(3) t2w(2);
+        t2w(3) 0 -t2w(1);
+        -t2w(2) t2w(1) 0];
+t3v = t3(1 : 3);
+t3w = t3(4 : 6);
+t3wh = [0 -t3w(3) t3w(2);
+        t3w(3) 0 -t3w(1);
+        -t3w(2) t3w(1) 0];
+t4v = t4(1 : 3);
+t4w = t4(4 : 6);
+t4wh = [0 -t4w(3) t4w(2);
+        t4w(3) 0 -t4w(1);
+        -t4w(2) t4w(1) 0];
+t5v = t5(1 : 3);
+t5w = t5(4 : 6);
+t5wh = [0 -t5w(3) t5w(2);
+        t5w(3) 0 -t5w(1);
+        -t5w(2) t5w(1) 0];
+t6v = t6(1 : 3);
+t6w = t6(4 : 6);
+t6wh = [0 -t6w(3) t6w(2);
+        t6w(3) 0 -t6w(1);
+        -t6w(2) t6w(1) 0];
+t1h = [t1wh t1v; 0 0 0 0];
+t2h = [t2wh t2v; 0 0 0 0];
+t3h = [t3wh t3v; 0 0 0 0];
+t4h = [t4wh t4v; 0 0 0 0];
+t5h = [t5wh t5v; 0 0 0 0];
+t6h = [t6wh t6v; 0 0 0 0];
+%computing matrix exponetial
+e1 = expm(t1h * theita1);
+e2 = expm(t2h * theita2);
+e3 = expm(t3h * theita3);
+e4 = expm(t4h * theita4);
+e5 = expm(t5h * theita5);
+e6 = expm(t6h * theita6);
+%computing adjoint base
+g1 = e1 * e2 * e3 * e4 * e5 * e6 * gst0;
+g2 = e2 * e3 * e4 * e5 * e6 * gst0;
+g3 = e3 * e4 * e5 * e6 * gst0;
+g4 = e4 * e5 * e6 * gst0;
+g5 = e5 * e6 * gst0;
+g6 = e6 * gst0;
+%computing p hat
+p1h = [0 -g1(3,4) g1(2,4);
+        g1(3,4) 0 -g1(1,4);
+        -g1(2,4) g1(1,4) 0];
+p2h = [0 -g2(3,4) g2(2,4);
+        g2(3,4) 0 -g2(1,4);
+        -g2(2,4) g2(1,4) 0];
+p3h = [0 -g3(3,4) g3(2,4);
+        g3(3,4) 0 -g3(1,4);
+        -g3(2,4) g3(1,4) 0];
+p4h = [0 -g4(3,4) g4(2,4);
+        g4(3,4) 0 -g4(1,4);
+        -g4(2,4) g4(1,4) 0];
+p5h = [0 -g5(3,4) g5(2,4);
+        g5(3,4) 0 -g5(1,4);
+        -g5(2,4) g5(1,4) 0];
+p6h = [0 -g6(3,4) g6(2,4);
+        g6(3,4) 0 -g6(1,4);
+        -g6(2,4) g6(1,4) 0];
+%computing adjoint
+z = zeros(3);
+ad1 = [transpose(g1(1:3, 1:3)) -transpose(g1(1:3, 1:3)) * p1h;
+        z transpose(g1(1:3, 1:3))];
+ad2 = [transpose(g2(1:3, 1:3)) -transpose(g2(1:3, 1:3)) * p2h;
+        z transpose(g2(1:3, 1:3))];
+ad3 = [transpose(g3(1:3, 1:3)) -transpose(g3(1:3, 1:3)) * p3h;
+        z transpose(g3(1:3, 1:3))];
+ad4 = [transpose(g4(1:3, 1:3)) -transpose(g4(1:3, 1:3)) * p4h;
+        z transpose(g4(1:3, 1:3))];
+ad5 = [transpose(g5(1:3, 1:3)) -transpose(g5(1:3, 1:3)) * p5h;
+        z transpose(g5(1:3, 1:3))];
+ad6 = [transpose(g6(1:3, 1:3)) -transpose(g6(1:3, 1:3)) * p6h;
+        z transpose(g6(1:3, 1:3))];
+%computing twist prime
+tp1 = ad1 * t1;
+tp2 = ad2 * t2;
+tp3 = ad3 * t3;
+tp4 = ad4 * t4;
+tp5 = ad5 * t5;
+tp6 = ad6 * t6;
+% computing body jacobian
+Jsbt = [tp1 tp2 tp3 tp4 tp5 tp6];
+end
+
